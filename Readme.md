@@ -22,3 +22,49 @@ path: './env'
 package.json :--->>> "scripts": {
 "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js"
 },
+
+Step 9 :----------------------------------------
+Step 10:Mostly we use [(app.use)] for middleware
+Step 11: npm i cookie-parser cors
+
+Step 12: mongoose-aggregate-paginate-v2
+npm install mongoose-aggregate-paginate-v2
+
+step 13:npm install bcrypt ( it help us to hash our password)
+userSchema.pre("save" , async function (next) {
+if(!this.isModified("password")) return next();
+
+    this.password = bcrypt.hash(this.password, 10)
+    next()
+
+})
+
+userSchema.methods.isPasswordCorrect = async function(password){
+return await bcrypt.compare(password, this.password)
+}
+Step 14: npm install jsonwebtoken
+userSchema.methods.generateAccessToken = function(){
+return jwt.sign(
+{
+\_id:this.\_id, //key hai
+email: this.email, // ya 3 tho db se aa rha hai
+username:this.username,
+fullName:this.fullName
+},
+process.env.ACCESS_TOKEN_SECRET,
+{
+expiresIn:process.env.ACCESS_TOKEN_EXPIRY
+}
+)
+}
+userSchema.methods.generateRefreshToken = function(){
+return jwt.sign(
+{
+\_id:this.\_id, //key hai
+},
+process.env.REFRESH_TOKEN_SECRET,
+{
+expiresIn:process.env.REFRESH_TOKEN_EXPIRY
+}
+)
+}
